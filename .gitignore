@@ -1,0 +1,13 @@
+.netlify/
+out/
+dist/
+data/
+android-app/app/src/shared/
+android-app/app/build/
+android-app/.gradle/
+android-app/build/
+sources.txt
+main_sources.txt
+test_sources.txt
+build_sources.txt
+*.class

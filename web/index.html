@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ShadowCrypt — 2D Dungeon Roguelike (Pure Java 21)</title>
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <script src="https://cjrtnc.leaningtech.com/5.0/loader.js"></script>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: radial-gradient(circle at top, #131b2e 0%, #090c14 72%);
+            color: #f1f5f9;
+            font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        header {
+            width: min(1100px, 96vw);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        .title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 20px;
+            font-weight: 700;
+            color: #facc15;
+            letter-spacing: 0.04em;
+        }
+        .title img {
+            width: 32px;
+            height: 32px;
+            border-radius: 7px;
+        }
+        .badge {
+            font-size: 12px;
+            font-weight: 600;
+            color: #38bdf8;
+            background: rgba(22, 32, 51, 0.9);
+            border: 1px solid #334155;
+            padding: 6px 12px;
+            border-radius: 999px;
+        }
+        #game-stage {
+            position: relative;
+            width: min(1100px, 96vw);
+            height: min(650px, 78vh);
+            background: #0b101c;
+            border: 1.5px solid #38bdf8;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.65);
+        }
+        #cheerpj-loading {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: #0b101c;
+            z-index: 10;
+            transition: opacity 0.35s ease;
+        }
+        #cheerpj-loading.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .spinner {
+            width: 42px;
+            height: 42px;
+            border: 4px solid #1e293b;
+            border-top-color: #facc15;
+            border-radius: 50%;
+            animation: spin 0.9s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .controls {
+            width: min(1100px, 96vw);
+            margin-top: 10px;
+            padding: 10px 16px;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid #334155;
+            border-radius: 10px;
+            font-size: 12.5px;
+            color: #cbd5e1;
+            text-align: center;
+        }
+        .controls strong { color: #facc15; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="title"><img src="favicon.png" alt="ShadowCrypt Logo" />SHADOWCRYPT — Pure Java 21 Roguelike</div>
+        <div class="badge" id="status-pill">Initializing OpenJDK 21 WebAssembly...</div>
+    </header>
+
+    <main id="game-stage">
+        <div id="cheerpj-loading">
+            <div class="spinner"></div>
+            <div style="font-size:16px; font-weight:600; color:#facc15;">Loading ShadowCrypt (Java 21)...</div>
+            <div style="font-size:13px; color:#94a3b8;" id="loading-detail">Starting CheerpJ WebAssembly JVM...</div>
+        </div>
+    </main>
+
+    <div class="controls">
+        <strong>Controls:</strong> WASD / Arrows: Move &nbsp;|&nbsp; Left Click / Space: Sword Cleave &nbsp;|&nbsp;
+        Right Click / F: Arcane Bolt &nbsp;|&nbsp; Shift: Dodge Dash &nbsp;|&nbsp; Q: Health Flask &nbsp;|&nbsp;
+        E: Descend Stairs &nbsp;|&nbsp; Esc: Pause
+    </div>
+
+    <script type="module">
+        const stage = document.getElementById("game-stage");
+        const loading = document.getElementById("cheerpj-loading");
+        const detail = document.getElementById("loading-detail");
+        const statusPill = document.getElementById("status-pill");
+
+        try {
+            await cheerpjInit({ version: 21 });
+            detail.textContent = "Creating Java2D display & launching ShadowCrypt.jar...";
+            cheerpjCreateDisplay(-1, -1, stage);
+
+            const basePath = new URL(".", window.location.href).pathname;
+            const jarPath = "/app" + (basePath.endsWith("/") ? basePath : basePath + "/") + "ShadowCrypt.jar";
+
+            statusPill.textContent = "Live in Browser • Java 21 Swing";
+            setTimeout(() => loading.classList.add("hidden"), 900);
+
+            await cheerpjRunJar(jarPath);
+        } catch (err) {
+            detail.textContent = "Launch error: " + (err?.message || err);
+            statusPill.textContent = "Launch Failed";
+            console.error(err);
+        }
+    </script>
+</body>
+</html>
