@@ -1,6 +1,7 @@
 .netlify/
 out/
-dist/
+dist/*
+!dist/ShadowCrypt-Android.apk
 data/
 android-app/app/src/shared/
 android-app/app/build/
